@@ -17,6 +17,8 @@ PlayScene::~PlayScene()
 
 void PlayScene::draw()
 {
+	TextureManager::Instance()->draw("bg", Config::SCREEN_WIDTH/2, Config::SCREEN_HEIGHT/2, 0, 255, true);
+
 	if(EventManager::Instance().isIMGUIActive())
 	{
 		GUI_Function();
@@ -116,6 +118,8 @@ void PlayScene::handleEvents()
 
 void PlayScene::start()
 {
+	//load background from texture.
+	TextureManager::Instance()->load("../Assets/textures/bg.jpg", "bg");
 	// Set GUI Title
 	m_guiTitle = "Play Scene";
 	
