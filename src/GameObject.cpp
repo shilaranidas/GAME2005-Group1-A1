@@ -1,106 +1,59 @@
 #include "GameObject.h"
 
-
 GameObject::GameObject():
-	m_position(glm::vec2(0, 0)), m_rotation(glm::vec2(0, 0)), m_scale(glm::vec2(0, 0)), m_velocity(glm::vec2(0, 0)),m_acceleration(glm::vec2(0, 0)),
-	m_width(0), m_height(0), m_currentRow(0), m_currentFrame(0), m_numFrames(0), m_isColliding(false), m_type(GameObjectType::NONE), m_state(State::NO_STATE)
+	m_width(0), m_height(0), m_type(NONE), m_enabled(true)
 {
 }
 
 GameObject::~GameObject()
+= default;
+
+Transform* GameObject::getTransform() 
 {
+	return &m_transform;
 }
 
-
-glm::vec2 GameObject::getPosition()
+RigidBody* GameObject::getRigidBody() 
 {
-	return m_position;
+	return &m_rigidBody;
 }
 
-glm::vec2 GameObject::getRotation()
-{
-	return m_rotation;
-}
-
-glm::vec2 GameObject::getScale()
-{
-	return m_scale;
-}
-
-glm::vec2 GameObject::getVelocity()
-{
-	return m_velocity;
-}
-
-glm::vec2 GameObject::getAcceleration()
-{
-	return m_acceleration;
-}
-
-int GameObject::getWidth()
+int GameObject::getWidth() const
 {
 	return m_width;
 }
 
-int GameObject::getHeight()
+int GameObject::getHeight() const
 {
 	return m_height;
 }
 
-bool GameObject::getIsColliding()
-{
-	return m_isColliding;
-}
-
-GameObjectType GameObject::getType()
+GameObjectType GameObject::getType() const
 {
 	return m_type;
 }
 
-State GameObject::getState()
+void GameObject::setWidth(const int new_width)
 {
-	return m_state;
+	m_width = new_width;
 }
 
-
-void GameObject::setPosition(glm::vec2 newPosition)
+void GameObject::setHeight(const int new_height)
 {
-
-
-	m_position = newPosition;
+	m_height = new_height;
 }
 
-void GameObject::setWidth(int newWidth)
+void GameObject::setType(const GameObjectType new_type)
 {
-	m_width = newWidth;
+	m_type = new_type;
 }
 
-void GameObject::setHeight(int newHeight)
+void GameObject::setEnabled(const bool state)
 {
-	m_height = newHeight;
+	m_enabled = state;
 }
 
-void GameObject::setVelocity(glm::vec2 newVelocity)
+bool GameObject::isEnabled() const
 {
-	m_velocity = newVelocity;
-}
-
-void GameObject::setIsColliding(bool collision)
-{
-	m_isColliding = collision;
-}
-
-void GameObject::setType(GameObjectType newType)
-{
-	m_type = newType;
-}
-
-void GameObject::setState(State newState)
-{
-	m_state = newState;
-}
-
-void GameObject::setAcceleration(glm::vec2 newAcceleration)
-{
-	m_acceleration = newAcceleration;
+	return m_enabled;
 }

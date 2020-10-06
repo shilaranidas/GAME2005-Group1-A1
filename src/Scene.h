@@ -2,20 +2,10 @@
 #ifndef __SCENE__
 #define __SCENE__
 
-#include <iostream>
 #include <vector>
-#include <string>
-
+#include <optional>
 #include "GameObject.h"
 
-enum SceneState
-{
-	NO_SCENE = -1,
-	START_SCENE,
-	PLAY_SCENE,
-	END_SCENE,
-	NUM_OF_SCENES
-};
 
 class Scene : public GameObject
 {
@@ -31,12 +21,20 @@ public:
 	virtual void handleEvents() = 0;
 	virtual void start() = 0;
 
-	void addChild(DisplayObject* child);
+	void addChild(DisplayObject* child, uint32_t layer_index = 0, std::optional<uint32_t> order_index = std::nullopt);
+	void removeChild(DisplayObject* child);
+
 	void removeAllChildren();
-	int numberOfChildren();
+	int numberOfChildren() const;
+
+	void updateDisplayList();
+	void drawDisplayList();
 
 private:
+	uint32_t m_nextLayerIndex = 0;
 	std::vector<DisplayObject*> m_displayList;
+
+	static bool sortObjects(DisplayObject* left, DisplayObject* right);
 };
 
 #endif /* defined (__SCENE__) */

@@ -1,30 +1,32 @@
 #include "Target.h"
-#include "Game.h"
+#include "TextureManager.h"
+
 
 Target::Target()
 {
-	TheTextureManager::Instance()->load("../Assets/textures/Circle.png",
-		"circle", TheGame::Instance()->getRenderer());
+	TextureManager::Instance()->load("../Assets/textures/Circle.png","circle");
 
-	glm::vec2 size = TheTextureManager::Instance()->getTextureSize("circle");
+	const auto size = TextureManager::Instance()->getTextureSize("circle");
 	setWidth(size.x);
 	setHeight(size.y);
-	setPosition(glm::vec2(100.0f, 100.0f));
-	setVelocity(glm::vec2(0, 0));
-	setIsColliding(false);
-	setType(GameObjectType::TARGET);
+	getTransform()->position = glm::vec2(100.0f, 100.0f);
+	getRigidBody()->velocity = glm::vec2(0, 0);
+	getRigidBody()->isColliding = false;
+
+	setType(TARGET);
 }
 
 Target::~Target()
-{
-}
+= default;
 
 void Target::draw()
 {
-	int xComponent = getPosition().x;
-	int yComponent = getPosition().y;
-	TheTextureManager::Instance()->draw("circle", xComponent, yComponent,
-		TheGame::Instance()->getRenderer(), true);
+	// alias for x and y
+	const auto x = getTransform()->position.x;
+	const auto y = getTransform()->position.y;
+
+	// draw the target
+	TextureManager::Instance()->draw("circle", x, y, 0, 255, true);
 }
 
 void Target::update()
@@ -39,8 +41,7 @@ void Target::clean()
 
 void Target::m_move()
 {
-	glm::vec2 newPosition = getPosition() + getVelocity() * 5.0f;
-	setPosition(newPosition);
+	getTransform()->position = getTransform()->position + getRigidBody()->velocity * 5.0f;
 }
 
 void Target::m_checkBounds()

@@ -1,10 +1,8 @@
 #include "EndScene.h"
-#include "Game.h"
-#include <ctime>
-#include "GLM/gtx/string_cast.hpp"
 #include <algorithm>
-#include "TileComparators.h"
-#include <iomanip>
+#include "Game.h"
+#include "glm/gtx/string_cast.hpp"
+#include "EventManager.h"
 
 EndScene::EndScene()
 {
@@ -12,58 +10,67 @@ EndScene::EndScene()
 }
 
 EndScene::~EndScene()
-{
-}
+= default;
 
 void EndScene::draw()
 {
-	m_Label->draw();
+	drawDisplayList();
 }
 
 void EndScene::update()
 {
+	updateDisplayList();
 }
 
 void EndScene::clean()
 {
-	delete m_Label;
 	removeAllChildren();
 }
 
 void EndScene::handleEvents()
 {
-	SDL_Event event;
-	if (SDL_PollEvent(&event))
+	EventManager::Instance().update();
+
+	// Button Events
+	m_pRestartButton->update();
+
+	// Keyboard Events
+	if (EventManager::Instance().isKeyDown(SDL_SCANCODE_ESCAPE))
 	{
-		switch (event.type)
-		{
-		case SDL_QUIT:
-			TheGame::Instance()->quit();
-			break;
-		case SDL_KEYDOWN:
-			switch (event.key.keysym.sym)
-			{
-			case SDLK_ESCAPE:
-				TheGame::Instance()->quit();
-				break;
-			case SDLK_1:
-				TheGame::Instance()->changeSceneState(SceneState::PLAY_SCENE);
-				break;
-			case SDLK_2:
-				TheGame::Instance()->changeSceneState(SceneState::START_SCENE);
-				break;
-			}
-			break;
-		default:
-			break;
-		}
+		TheGame::Instance()->quit();
+	}
+
+	if (EventManager::Instance().isKeyDown(SDL_SCANCODE_1))
+	{
+		TheGame::Instance()->changeSceneState(PLAY_SCENE);
 	}
 }
 
 void EndScene::start()
 {
-	SDL_Color blue = { 0, 0, 255, 255 };
-	m_Label = new Label("END SCENE", "Dock51", 80, blue, glm::vec2(400.0f, 40.0f));
-	m_Label->setParent(this);
-	addChild(m_Label);
+	const SDL_Color blue = { 0, 0, 255, 255 };
+	m_label = new Label("END SCENE", "Dock51", 80, blue, glm::vec2(400.0f, 40.0f));
+	m_label->setParent(this);
+	addChild(m_label);
+
+	// Restart Button
+	m_pRestartButton = new Button("../Assets/textures/restartButton.png", "restartButton", RESTART_BUTTON);
+	m_pRestartButton->getTransform()->position = glm::vec2(400.0f, 400.0f);
+	m_pRestartButton->addEventListener(CLICK, [&]()-> void
+	{
+		m_pRestartButton->setActive(false);
+		TheGame::Instance()->changeSceneState(PLAY_SCENE);
+	});
+
+	m_pRestartButton->addEventListener(MOUSE_OVER, [&]()->void
+	{
+		m_pRestartButton->setAlpha(128);
+	});
+
+	m_pRestartButton->addEventListener(MOUSE_OUT, [&]()->void
+	{
+		m_pRestartButton->setAlpha(255);
+	});
+
+	addChild(m_pRestartButton);
 }

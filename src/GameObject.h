@@ -1,29 +1,14 @@
 #pragma once
-#ifndef __GameObject__
-#define __GameObject__
+#ifndef __GAME_OBJECT__
+#define __GAME_OBJECT__
 
-#include <glm\vec2.hpp>
+#include "Transform.h"
+#include "RigidBody.h"
 #include <string>
 
-enum GameObjectType {
-	NONE = -1,
-	SHIP,
-	TARGET,
-	PLANET,
-	MINE,
-	TILE,
-	NUM_OF_TYPES
-};
+// enums
+#include "GameObjectType.h"
 
-enum State {
-	NO_STATE= -1,
-	IDLE,
-	SEEK,
-	ARRIVE,
-	AVOID,
-	FLEE,
-	NUM_OF_STATES
-};
 
 class GameObject {
 public:
@@ -40,51 +25,35 @@ public:
 	virtual void clean() = 0;
 
 	// getters for common variables
-	glm::vec2 getPosition();
-	glm::vec2 getRotation();
-	glm::vec2 getScale();
-	glm::vec2 getVelocity();
-	glm::vec2 getAcceleration();
-	int getWidth();
-	int getHeight();
-	bool getIsColliding();
-	GameObjectType getType();
-	State getState();
+	Transform* getTransform();
 
-	// setters for common variables
-	void setPosition(glm::vec2 newPosition);
-	void setWidth(int newWidth);
-	void setHeight(int newHeight);
-	void setVelocity(glm::vec2 newVelocity);
-	void setIsColliding(bool collision);
-	void setType(GameObjectType newType);
-	void setState(State newState);
-	void setAcceleration(glm::vec2 newAcceleration);
+	// getters and setters for physics properties
+	RigidBody* getRigidBody();
+	
+	// getters and setters for game object properties
+	int getWidth() const;
+	int getHeight() const;
+	void setWidth(int new_width);
+	void setHeight(int new_height);
+	GameObjectType getType() const;
+	void setType(GameObjectType new_type);
+
+	void setEnabled(bool state);
+	bool isEnabled() const;
 
 private:
-	// transform variables
-	glm::vec2 m_position;
-	glm::vec2 m_rotation;
-	glm::vec2 m_scale;
-
-	// movement variables
-	glm::vec2 m_velocity;
-	glm::vec2 m_acceleration;
+	// transform component
+	Transform m_transform;
+	
+	// rigid body component
+	RigidBody m_rigidBody;
 
 	// size variables
 	int m_width;
 	int m_height;
-
-	// animation variables
-	int m_currentRow;
-	int m_currentFrame;
-	int m_numFrames;
-	std::string m_textureID;
-
-	// collision variables
-	bool m_isColliding;
 	GameObjectType m_type;
-	State m_state;
+
+	bool m_enabled;
 };
 
-#endif
+#endif /* defined (__GAME_OBJECT__) */

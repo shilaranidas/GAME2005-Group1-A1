@@ -1,10 +1,8 @@
 #include "StartScene.h"
-#include "Game.h"
-#include <ctime>
-#include "GLM/gtx/string_cast.hpp"
 #include <algorithm>
-#include "TileComparators.h"
-#include <iomanip>
+#include "Game.h"
+#include "glm/gtx/string_cast.hpp"
+#include "EventManager.h"
 
 StartScene::StartScene()
 {
@@ -12,65 +10,42 @@ StartScene::StartScene()
 }
 
 StartScene::~StartScene()
-{
-}
+= default;
 
 void StartScene::draw()
 {
-	m_pStartLabel->draw();
-	m_pInstructionsLabel->draw();
-
-	m_pShip->draw();
+	drawDisplayList();
 }
 
 void StartScene::update()
 {
+	updateDisplayList();
 }
 
 void StartScene::clean()
 {
-	delete m_pStartLabel;
-	delete m_pInstructionsLabel;
-
-	delete m_pShip;
-
 	removeAllChildren();
 }
 
 void StartScene::handleEvents()
 {
-	SDL_Event event;
-	if (SDL_PollEvent(&event))
-	{
-		switch (event.type)
-		{
-		case SDL_QUIT:
-			TheGame::Instance()->quit();
-			break;
-		case SDL_KEYDOWN:
-			switch (event.key.keysym.sym)
-			{
-			case SDLK_ESCAPE:
-				TheGame::Instance()->quit();
-				break;
-			case SDLK_1:
-				TheGame::Instance()->changeSceneState(SceneState::PLAY_SCENE);
-				break;
-			case SDLK_2:
-				TheGame::Instance()->changeSceneState(SceneState::END_SCENE);
-				break;
-			}
-			break;
+	EventManager::Instance().update();
 
-		default:
-			break;
-		}
+	// Keyboard Events
+	if(EventManager::Instance().isKeyDown(SDL_SCANCODE_ESCAPE))
+	{
+		TheGame::Instance()->quit();
+	}
+
+	if(EventManager::Instance().isKeyDown(SDL_SCANCODE_1))
+	{
+		TheGame::Instance()->changeSceneState(PLAY_SCENE);
 	}
 }
 
 void StartScene::start()
 {
-	SDL_Color blue = { 0, 0, 255, 255 };
+	const SDL_Color blue = { 0, 0, 255, 255 };
 	m_pStartLabel = new Label("START SCENE", "Consolas", 80, blue, glm::vec2(400.0f, 40.0f));
 	m_pStartLabel->setParent(this);
 	addChild(m_pStartLabel);
@@ -79,7 +54,32 @@ void StartScene::start()
 	m_pInstructionsLabel->setParent(this);
 	addChild(m_pInstructionsLabel);
 
+
 	m_pShip = new Ship();
-	m_pShip->setPosition(glm::vec2(400.0f, 300.0f));
-	addChild(m_pShip);
+	m_pShip->getTransform()->position = glm::vec2(400.0f, 300.0f); 
+	addChild(m_pShip); 
+
+	// Start Button
+	m_pStartButton = new Button();
+	m_pStartButton->getTransform()->position = glm::vec2(400.0f, 400.0f); 
+
+	m_pStartButton->addEventListener(CLICK, [&]()-> void
+	{
+		m_pStartButton->setActive(false);
+		TheGame::Instance()->changeSceneState(PLAY_SCENE);
+	});
+	
+	m_pStartButton->addEventListener(MOUSE_OVER, [&]()->void
+	{
+		m_pStartButton->setAlpha(128);
+	});
+
+	m_pStartButton->addEventListener(MOUSE_OUT, [&]()->void
+	{
+		m_pStartButton->setAlpha(255);
+	});
+	addChild(m_pStartButton);
+
+	
 }
+

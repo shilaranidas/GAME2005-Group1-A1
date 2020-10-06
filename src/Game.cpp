@@ -1,31 +1,38 @@
 #include "Game.h"
-#include <ctime>
-#include "GLM/gtx/string_cast.hpp"
 #include <algorithm>
-#include "TileComparators.h"
+#include <ctime>
 #include <iomanip>
+#include "glm/gtx/string_cast.hpp"
+#include "Renderer.h"
+#include "EventManager.h"
+
+// IMGUI Includes
+#include "imgui.h"
+#include "imgui_sdl.h"
 
 
-Game* Game::s_pInstance = 0;
+Game* Game::s_pInstance = nullptr;
 
 // Game functions - DO NOT REMOVE ***********************************************
 
 Game::Game() :
-	m_pWindow(NULL), m_pRenderer(NULL), m_currentFrame(0), m_currentScene(NULL), m_bRunning(true), m_currentSceneState(SceneState::NO_SCENE), m_frames(0)
+	m_pWindow(nullptr), m_bRunning(true), m_frames(0), m_currentScene(nullptr), m_currentSceneState(NO_SCENE)
 {
-	srand((unsigned)time(NULL));  // random seed
-
-	
+	srand(unsigned(time(nullptr)));  // random seed
 }
 
 Game::~Game()
+= default;
+
+
+void Game::init()
 {
+	m_bRunning = true;
 }
 
-
-bool Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen)
+bool Game::init(const char* title, const int x, const int y, const int width, const int height, const bool fullscreen)
 {
-	int flags = 0;
+	auto flags = 0;
 
 	if (fullscreen)
 	{
@@ -38,19 +45,21 @@ bool Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		std::cout << "SDL Init success" << std::endl;
 
 		// if succeeded create our window
-		m_pWindow = SDL_CreateWindow(title, xpos, ypos, width, height, flags);
-
+		m_pWindow = (Config::make_resource(SDL_CreateWindow(title, x, y, width, height, flags)));
+		
 		// if window creation successful create our renderer
-		if (m_pWindow != 0)
+		if (m_pWindow != nullptr)
 		{
 			std::cout << "window creation success" << std::endl;
-			m_pRenderer = SDL_CreateRenderer(m_pWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-
-			if (m_pRenderer != 0) // render init success
+			// create a new SDL Renderer and store it in the Singleton
+			const auto renderer = (Config::make_resource(SDL_CreateRenderer(m_pWindow.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)));
+			Renderer::Instance()->setRenderer(renderer);
+			
+			if (Renderer::Instance()->getRenderer() != nullptr) // render init success
 			{
 				std::cout << "renderer creation success" << std::endl;
-				SDL_SetRenderDrawColor(m_pRenderer, 255, 255, 255, 255);
+				SDL_SetRenderDrawColor(Renderer::Instance()->getRenderer(), 255, 255, 255, 255);
 			}
 			else
 			{
@@ -60,7 +69,7 @@ bool Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
 			// IMGUI 
 			ImGui::CreateContext();
-			ImGuiSDL::Initialize(m_pRenderer, width, height);
+			ImGuiSDL::Initialize(Renderer::Instance()->getRenderer(), width, height);
 
 			// Initialize Font Support
 			if (TTF_Init() == -1)
@@ -69,9 +78,6 @@ bool Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 				return false;
 			}
 
-			
-
-			//TheTextureManager::Instance()->load("../../Assets/textures/animate-alpha.png", "animate", m_pRenderer);
 			start();
 
 		}
@@ -95,36 +101,38 @@ bool Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
 void Game::start()
 {
-	m_currentSceneState = SceneState::NO_SCENE;
+	m_currentSceneState = NO_SCENE;
 
-	changeSceneState(SceneState::START_SCENE);
+	changeSceneState(START_SCENE);
 }
 
-SDL_Renderer * Game::getRenderer()
+bool Game::isRunning() const
 {
-	return m_pRenderer;
+	return m_bRunning;
 }
 
-glm::vec2 Game::getMousePosition()
+
+glm::vec2 Game::getMousePosition() const
 {
 	return m_mousePosition;
 }
 
-void Game::setFrames(Uint32 frames)
+void Game::setFrames(const Uint32 frames)
 {
 	m_frames = frames;
 }
 
-Uint32 Game::getFrames()
+Uint32 Game::getFrames() const
 {
 	return m_frames;
 }
 
-void Game::changeSceneState(SceneState newState)
+void Game::changeSceneState(const SceneState new_state)
 {
-	if (newState != m_currentSceneState) {
-		
-		if (m_currentSceneState != SceneState::NO_SCENE) 
+	if (new_state != m_currentSceneState) {
+
+		// scene clean up
+		if (m_currentSceneState != NO_SCENE) 
 		{
 			m_currentScene->clean();
 			std::cout << "cleaning previous scene" << std::endl;
@@ -134,19 +142,23 @@ void Game::changeSceneState(SceneState newState)
 			std::cout << "cleaning TextureManager" << std::endl;
 		}
 
-		m_currentSceneState = newState;
-		
+		m_currentScene = nullptr;
+
+		m_currentSceneState = new_state;
+
+		EventManager::Instance().reset();
+
 		switch (m_currentSceneState)
 		{
-		case SceneState::START_SCENE:
+		case START_SCENE:
 			m_currentScene = new StartScene();
 			std::cout << "start scene activated" << std::endl;
 			break;
-		case SceneState::PLAY_SCENE:
+		case PLAY_SCENE:
 			m_currentScene = new PlayScene();
 			std::cout << "play scene activated" << std::endl;
 			break;
-		case SceneState::END_SCENE:
+		case END_SCENE:
 			m_currentScene = new EndScene();
 			std::cout << "end scene activated" << std::endl;
 			break;
@@ -163,59 +175,33 @@ void Game::quit()
 	m_bRunning = false;
 }
 
-void Game::render()
+void Game::render() const
 {
-	SDL_RenderClear(m_pRenderer); // clear the renderer to the draw colour
+	SDL_RenderClear(Renderer::Instance()->getRenderer()); // clear the renderer to the draw colour
 
 	m_currentScene->draw();
 
-	SDL_RenderPresent(m_pRenderer); // draw to the screen
+	SDL_RenderPresent(Renderer::Instance()->getRenderer()); // draw to the screen
 }
 
-void Game::update()
+void Game::update() const
 {
 	m_currentScene->update();
 }
 
-void Game::clean()
+void Game::clean() const
 {
 	std::cout << "cleaning game" << std::endl;
 
-	SDL_DestroyRenderer(m_pRenderer);
-	SDL_DestroyWindow(m_pWindow);
-
-	// Clean Up for ImGui
+	// Clean Up for IMGUI
 	ImGui::DestroyContext();
-
+	
 	TTF_Quit();
 
 	SDL_Quit();
-
-	
 }
 
 void Game::handleEvents()
 {
 	m_currentScene->handleEvents();
-
-	SDL_Event event;
-	if (SDL_PollEvent(&event))
-	{
-		switch (event.type)
-		{
-		case SDL_QUIT:
-			m_bRunning = false;
-			break;
-		case SDL_KEYDOWN:
-			switch (event.key.keysym.sym) 
-			{
-				case SDLK_ESCAPE:
-					m_bRunning = false;
-					break;
-			}
-			break;
-		default:
-			break;
-		}
-	}
 }

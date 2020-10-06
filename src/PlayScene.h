@@ -3,13 +3,10 @@
 #define __PLAY_SCENE__
 
 #include "Scene.h"
-
-// Game Objects
-#include "ship.h"
-#include "Tile.h"
-
-
-#include <memory>
+#include "Plane.h"
+#include "Player.h"
+#include "Button.h"
+#include "Label.h"
 
 class PlayScene : public Scene
 {
@@ -17,36 +14,27 @@ public:
 	PlayScene();
 	~PlayScene();
 
-	// Inherited via Scene
+	// Scene LifeCycle Functions
 	virtual void draw() override;
 	virtual void update() override;
 	virtual void clean() override;
 	virtual void handleEvents() override;
 	virtual void start() override;
-
 private:
-	// GameObjects
-	Ship* m_pShip;
-
-	// Tile & Grid members
-	std::vector<Tile*> m_pGrid;
-
-	void m_buildGrid();
-
+	// IMGUI Function
+	void GUI_Function() const;
+	std::string m_guiTitle;
+	
 	glm::vec2 m_mousePosition;
 
-	// ImGui utility functions
-	void m_ImGuiKeyMap();
-	void m_ImGuiSetStyle();
-	void m_updateUI();
+	Plane* m_pPlaneSprite;
+	Player* m_pPlayer;
+	bool m_playerFacingRight;
 
-	// ImGui menu variables
-	bool m_exitApp = false;
-	bool m_displayAbout = false;
-	bool m_displayUI = true;
-	
-	void m_resetAll();
-
+	// UI Items
+	Button* m_pBackButton;
+	Button* m_pNextButton;
+	Label* m_pInstructionsLabel;
 };
 
 #endif /* defined (__PLAY_SCENE__) */
