@@ -19,13 +19,14 @@ void PlayScene::draw()
 {
 	TextureManager::Instance()->draw("bg", Config::SCREEN_WIDTH/2, Config::SCREEN_HEIGHT/2, 0, 255, true);
 
-	if(EventManager::Instance().isIMGUIActive())
+	
+	drawDisplayList();
+	SDL_SetRenderDrawColor(Renderer::Instance()->getRenderer(), 255, 255, 255, 255);
+	if (EventManager::Instance().isIMGUIActive())
 	{
 		GUI_Function();
 	}
 
-	drawDisplayList();
-	SDL_SetRenderDrawColor(Renderer::Instance()->getRenderer(), 255, 255, 255, 255);
 }
 
 void PlayScene::update()
