@@ -189,23 +189,35 @@ void PlayScene::GUI_Function() const
 	// See examples by uncommenting the following - also look at imgui_demo.cpp in the IMGUI filter
 	//ImGui::ShowDemoWindow();
 	
-	ImGui::Begin("Your Window Title Goes Here", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_MenuBar);
+	ImGui::Begin("GAME2005 Game Physics: Assignment 1", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_MenuBar);
 
-	if(ImGui::Button("My Button"))
+	if(ImGui::Button("Throw Thermal Detonator"))
 	{
 		std::cout << "My Button Pressed" << std::endl;
 	}
 
 	ImGui::Separator();
-
-	static float float3[3] = { 0.0f, 1.0f, 1.5f };
-	if(ImGui::SliderFloat3("My Slider", float3, 0.0f, 2.0f))
+	
+	ImGui::Checkbox("Gravity", m_isGravityEnabledPtr);
+	/*if((*m_isGravityEnabledPtr))
+		std::cout << "T" << std::endl;
+	else
+		std::cout << "F" << std::endl;*/
+	ImGui::Separator();
+	static int xPlayerPos = 150;
+	if (ImGui::SliderInt("My Slider", &xPlayerPos, 0, 800))
+	{
+		m_pPlayer->getTransform()->position.x = xPlayerPos;
+		
+	}
+	//static float float3[3] = { 0.0f, 1.0f, 1.5f };
+	/*if(ImGui::SliderFloat3("My Slider", float3, 0.0f, 2.0f))
 	{
 		std::cout << float3[0] << std::endl;
 		std::cout << float3[1] << std::endl;
 		std::cout << float3[2] << std::endl;
 		std::cout << "---------------------------\n";
-	}
+	}*/
 	
 	ImGui::End();
 

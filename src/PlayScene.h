@@ -35,6 +35,8 @@ private:
 	Button* m_pBackButton;
 	Button* m_pNextButton;
 	Label* m_pInstructionsLabel;
+	bool m_isGravityEnabled = false;
+	bool* m_isGravityEnabledPtr=&m_isGravityEnabled;
 };
 
 #endif /* defined (__PLAY_SCENE__) */
