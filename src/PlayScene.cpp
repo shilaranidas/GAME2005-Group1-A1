@@ -124,9 +124,9 @@ void PlayScene::start()
 	// Set GUI Title
 	m_guiTitle = "Play Scene";
 	
-	//// Plane Sprite
-	//m_pPlaneSprite = new Plane();
-	//addChild(m_pPlaneSprite);
+	//// Ball Sprite
+	m_pBall = new Target();
+	addChild(m_pBall);
 
 	// Player Sprite
 	m_pPlayer = new Player();
