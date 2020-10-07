@@ -212,19 +212,19 @@ void PlayScene::GUI_Function() const
 		
 	}
 	ImGui::Separator();
-	//static float velocity[2] = { 0,0 };
-	static float xThrowSpeed = 0.0f;
-	if (ImGui::InputFloat("Throw Speed x", &xThrowSpeed)) {
+	static float throwSpeed[2] = { 0,0 };
+	//static float xThrowSpeed = 0.0f;
+	/*if (ImGui::InputFloat("Throw Speed x", &xThrowSpeed)) {
 		m_pBall->throwSpeed.x = xThrowSpeed;
-	}	
-	static float yThrowSpeed = 0.0f;
-	if (ImGui::InputFloat("Throw Speed y", &yThrowSpeed)) {
+	}*/	
+	//static float yThrowSpeed = 0.0f;
+	/*if (ImGui::InputFloat("Throw Speed y", &yThrowSpeed)) {
 		m_pBall->throwSpeed.y = yThrowSpeed;
-	}
-	/*if(ImGui::SliderFloat2("Throw Speed", velocity, 0.0f, 500.0f))
-	{
-		m_pBall->throwSpeed = glm::vec2(velocity[0], -velocity[1]);
 	}*/
+	if(ImGui::SliderFloat2("Throw Speed", throwSpeed, -100.0f, 100.0f))
+	{
+		m_pBall->throwSpeed = glm::vec2(throwSpeed[0], throwSpeed[1]);
+	}
 	/*if (ImGui::InputFloat2("ThrowSpeed", velocity)) {
 		m_pBall->throwSpeed = glm::vec2(velocity[0], velocity[1]);
 	}*/
