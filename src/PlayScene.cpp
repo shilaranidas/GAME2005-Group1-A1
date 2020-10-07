@@ -191,10 +191,9 @@ void PlayScene::GUI_Function() const
 	
 	ImGui::Begin("GAME2005 Game Physics: Assignment 1", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_MenuBar);
 
-	if(ImGui::Button("Throw Thermal Detonator"))
-	{
-		std::cout << "My Button Pressed" << std::endl;
-	}
+	bool buttonPressed = ImGui::Button("Throw Thermal Detonator");
+	if (buttonPressed)
+		m_pBall->doThrow();
 
 	ImGui::Separator();
 	
@@ -206,17 +205,29 @@ void PlayScene::GUI_Function() const
 		//std::cout << "F" << std::endl;
 	ImGui::Separator();
 	static int xPlayerPos = 150;
-	if (ImGui::SliderInt("My Slider", &xPlayerPos, 0, 800))
+	if (ImGui::SliderInt("Player x position", &xPlayerPos, 0, Config::SCREEN_WIDTH))
 	{
-		m_pPlayer->getTransform()->position.x = xPlayerPos;
+		m_pPlayer->getTransform()->position = glm::vec2(xPlayerPos,450.0f);
+		m_pBall->throwPosition = glm::vec2(xPlayerPos+20.0f,450.0f);
 		
 	}
-
-	static float velocity[2] = { 0,0 };
-	if(ImGui::SliderFloat2("Throw Speed", velocity, 0.0f, 500.0f))
-	{
-		
+	ImGui::Separator();
+	//static float velocity[2] = { 0,0 };
+	static float xThrowSpeed = 0.0f;
+	if (ImGui::InputFloat("Throw Speed x", &xThrowSpeed)) {
+		m_pBall->throwSpeed.x = xThrowSpeed;
+	}	
+	static float yThrowSpeed = 0.0f;
+	if (ImGui::InputFloat("Throw Speed y", &yThrowSpeed)) {
+		m_pBall->throwSpeed.y = yThrowSpeed;
 	}
+	/*if(ImGui::SliderFloat2("Throw Speed", velocity, 0.0f, 500.0f))
+	{
+		m_pBall->throwSpeed = glm::vec2(velocity[0], -velocity[1]);
+	}*/
+	/*if (ImGui::InputFloat2("ThrowSpeed", velocity)) {
+		m_pBall->throwSpeed = glm::vec2(velocity[0], velocity[1]);
+	}*/
 	//static float float3[3] = { 0.0f, 1.0f, 1.5f };
 	/*if(ImGui::SliderFloat3("My Slider", float3, 0.0f, 2.0f))
 	{
