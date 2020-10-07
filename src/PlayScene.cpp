@@ -199,15 +199,22 @@ void PlayScene::GUI_Function() const
 	ImGui::Separator();
 	
 	ImGui::Checkbox("Gravity", m_isGravityEnabledPtr);
-	/*if((*m_isGravityEnabledPtr))
-		std::cout << "T" << std::endl;
-	else
-		std::cout << "F" << std::endl;*/
+	//if ((*m_isGravityEnabledPtr))
+		//std::cout << "T" << std::endl;
+		m_pBall->isGravityEnabled = *m_isGravityEnabledPtr;
+	//else
+		//std::cout << "F" << std::endl;
 	ImGui::Separator();
 	static int xPlayerPos = 150;
 	if (ImGui::SliderInt("My Slider", &xPlayerPos, 0, 800))
 	{
 		m_pPlayer->getTransform()->position.x = xPlayerPos;
+		
+	}
+
+	static float velocity[2] = { 0,0 };
+	if(ImGui::SliderFloat2("Throw Speed", velocity, 0.0f, 500.0f))
+	{
 		
 	}
 	//static float float3[3] = { 0.0f, 1.0f, 1.5f };

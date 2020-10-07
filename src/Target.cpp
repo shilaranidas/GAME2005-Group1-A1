@@ -2,6 +2,7 @@
 #include "TextureManager.h"
 
 
+
 Target::Target()
 {
 	TextureManager::Instance()->load("../Assets/textures/ball.png","circle");
@@ -41,8 +42,12 @@ void Target::clean()
 
 void Target::m_move()
 {
-	
-	getTransform()->position = getTransform()->position + getRigidBody()->velocity * 5.0f;
+	float deltaTime = 1.0f / 60.0f;
+	glm::vec2 gravity = glm::vec2(0, 9.8);
+	//getRigidBody()->acceleration = gravity*deltaTime;
+	getRigidBody()->velocity += (getRigidBody()->acceleration + gravity) * deltaTime;
+	if (!isGravityEnabled)  getRigidBody()->velocity.y = 0;
+	getTransform()->position += getRigidBody()->velocity * deltaTime;
 }
 
 void Target::m_checkBounds()
