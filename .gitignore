@@ -259,3 +259,11 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/include/IMGUI/examples/example_glfw_vulkan/out/build/x64-Debug (default)/CMakeFiles/3.17.20032601-MSVC_2/CompilerIdC/CMakeCCompilerId.c
+/include/IMGUI/examples/example_glfw_vulkan/out/build/x64-Debug (default)/CMakeFiles/3.17.20032601-MSVC_2/CompilerIdCXX/CMakeCXXCompilerId.cpp
+*.cmake
+*.bin
+*.h
+*.c
+*.check_cache
+*.txt
