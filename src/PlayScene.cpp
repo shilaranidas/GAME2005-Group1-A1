@@ -135,6 +135,8 @@ void PlayScene::reset() {
 	m_pBall->isGravityEnabled = false;
 	m_angleGiv = false;
 	m_velocityGiv = false;
+	m_distanceGiv = false;
+	m_timeGiv = false;
 	//m_velocityGiven = false;
 	//m_angleGiven = false;
 	m_pBall->getTransform()->position = m_pPlayer->getTransform()->position + glm::vec2(20.0f, 0.0f);
@@ -245,7 +247,7 @@ void PlayScene::changeLabel() {
 }
 void PlayScene::distanceVelKnown() {
 
-	m_pBall->m_angle = Util::Rad2Deg *0.5f *sinh(m_pBall->m_gravity*m_distance*m_PPM/((m_pBall->m_velocity * m_PPM)* (m_pBall->m_velocity * m_PPM)));
+	m_pBall->m_angle = Util::Rad2Deg *0.5f *asin(m_pBall->m_gravity*m_distance*m_PPM/((m_pBall->m_velocity * m_PPM)* (m_pBall->m_velocity * m_PPM)));
 	//m_pBall->throwPosition = glm::vec2(m_pPlayer->getTransform()->position.x + 20.0f, m_pPlayer->getTransform()->position.y);
 	// velocity components
 	m_pBall->m_velocityX = (m_pBall->m_velocity * m_PPM) * cos(m_pBall->m_angle * Util::Deg2Rad);
@@ -258,7 +260,7 @@ void PlayScene::distanceVelKnown() {
 	m_height= (m_pBall->m_velocity * m_PPM) * (m_pBall->m_velocity * m_PPM) * sin( m_pBall->m_angle * Util::Deg2Rad)* sin(m_pBall->m_angle * Util::Deg2Rad) /(2* m_pBall->m_gravity);
 	m_totalTime = (m_pBall->m_velocity * m_PPM) * sin(m_pBall->m_angle * Util::Deg2Rad) / m_pBall->m_gravity;
 	//set stormtrooper
-	m_pStormtrooper->getTransform()->position = glm::vec2(m_distance * m_PPM, fl);
+	//m_pStormtrooper->getTransform()->position = glm::vec2(m_distance * m_PPM, fl);
 }
 void PlayScene::angleVelKnown() {
 	//m_pBall->throwPosition = glm::vec2(m_pPlayer->getTransform()->position.x + 20.0f, m_pPlayer->getTransform()->position.y);
@@ -273,7 +275,7 @@ void PlayScene::angleVelKnown() {
 	m_height = (m_pBall->m_velocity * m_PPM) * (m_pBall->m_velocity * m_PPM) * sin(m_pBall->m_angle * Util::Deg2Rad) * sin(m_pBall->m_angle * Util::Deg2Rad) / (2 * m_pBall->m_gravity);
 	m_totalTime = (m_pBall->m_velocity * m_PPM) * sin(m_pBall->m_angle * Util::Deg2Rad) / m_pBall->m_gravity;
 	//set stormtrooper
-	m_pStormtrooper->getTransform()->position = glm::vec2(m_distance * m_PPM, fl);
+	m_pStormtrooper->getTransform()->position = glm::vec2(m_distance * m_PPM+ m_pPlayer->getTransform()->position.x, fl) ;
 }
 void PlayScene::GUI_Function() 
 {
@@ -289,7 +291,11 @@ void PlayScene::GUI_Function()
 	ImGui::Separator();
 	bool buttonPressed = ImGui::Button("Throw Thermal Detonator");
 	if (buttonPressed)
+	{
+		m_pBall->getTransform()->position = glm::vec2(m_pPlayer->getTransform()->position.x + 40.0f, fl);
+		m_pBall->throwPosition = glm::vec2(m_pPlayer->getTransform()->position.x + 40.0f, fl);
 		m_pBall->doThrow();
+	}
 	ImGui::SameLine();
 	if (ImGui::Button("Reset All"))
 	{
@@ -309,7 +315,7 @@ void PlayScene::GUI_Function()
 	{
 		m_pPlayer->getTransform()->position = glm::vec2(xPlayerPos, fl);
 		m_pBall->getTransform()->position= glm::vec2(xPlayerPos + 40.0f, fl);
-		m_pBall->throwPosition = glm::vec2(xPlayerPos + 20.0f, fl);
+		m_pBall->throwPosition = glm::vec2(xPlayerPos + 40.0f, fl);
 		
 	}
 	
@@ -326,7 +332,7 @@ void PlayScene::GUI_Function()
 	ImGui::SameLine();
 	if (ImGui::SliderFloat(" degree", &m_pBall->m_angle, 0.0f, 90.0f, "%.1f"))
 	{
-		if (m_angleGiv && m_velocityGiv)
+		if (m_angleGiven && m_velocityGiven)
 		{
 			//// velocity components
 			//m_pBall->m_velocityX = (m_pBall->m_velocity * m_PPM) * cos(m_pBall->m_angle * Util::Deg2Rad);
@@ -346,7 +352,7 @@ void PlayScene::GUI_Function()
 	ImGui::SameLine();
 	if (ImGui::SliderFloat("m/s", &m_pBall->m_velocity, 0.0f, 200.0f, "%.1f"))
 	{
-		if(m_angleGiv && m_velocityGiv)
+		if(m_angleGiven && m_velocityGiven)
 			{
 				
 				angleVelKnown();
@@ -364,10 +370,12 @@ void PlayScene::GUI_Function()
 		//distance in meter need to transfer to pixel
 		if (m_distanceGiven)
 		{
-			m_pStormtrooper->getTransform()->position = glm::vec2(m_distance * m_PPM, fl);
-			if (m_distanceGiven && m_velocityGiv)
+			m_pStormtrooper->getTransform()->position = glm::vec2(m_distance * m_PPM + m_pPlayer->getTransform()->position.x, fl);
+			if (m_distanceGiven && m_velocityGiven)
+			{
 				distanceVelKnown();
-			changeLabel();
+				changeLabel();
+			}
 		}
 	}
 
