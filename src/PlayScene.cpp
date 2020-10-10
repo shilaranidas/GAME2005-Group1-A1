@@ -133,6 +133,11 @@ void PlayScene::start()
 	addChild(m_pPlayer);
 	m_playerFacingRight = true;
 
+	//Enemy Sprite
+	m_pPlaneSprite = new Plane();
+	addChild(m_pPlaneSprite);
+
+
 	// Back Button
 	m_pBackButton = new Button("../Assets/textures/backButton.png", "backButton", BACK_BUTTON);
 	m_pBackButton->getTransform()->position = glm::vec2(300.0f, 540.0f);
